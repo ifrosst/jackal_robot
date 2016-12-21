@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # THIS SCRIPT COPIES A ROSBAG TO CPR INTERNAL SERVERS FOR ANALYSIS IF POSSIBLE
-
 TEMPDIR=$(mktemp -d --tmpdir jackal_circle_test.XXXX)
 BAG_FILE=${TEMPDIR}/${HOSTNAME}_test
 DURATION=60
@@ -66,10 +65,13 @@ echo "Waiting for rosbag to shut down."
 
 sleep 2
 
-#TO - Add check if connected to Clearpath intenal server
-#IF xxxxxxxxx
-#echo "Copying bag file to Clearpath Internal servers"
-#cp ${BAG_FILE}* path_to_cpr_ipython_server
-# else
-echo "Unable to connect Clearpath Internal servers, copying rosbag to home directory"
-cp ${BAG_FILE}* /home/administrator
+ping -c 1 10.27.0.1 > /dev/null
+if [[ "$?" != "0" ]]; then
+  echo "Unable to connect to Clearpath Internal servers, copying rosbag to home directory, please send to support@clearpathrobotics.com for analysis"
+  cp ${BAG_FILE}* /home/administrator
+else
+  echo -n "Enter your Clearpath Username > "
+  read username
+  cd ${TEMPDIR}
+  smbclient //ipython/notebooks -W clearpath -U ${username} -c  'cd  \mcote\Jackal_Inspection_Bags ; lcd '${TMPDIR}';recurse ON;prompt OFF; mput *'
+fi
