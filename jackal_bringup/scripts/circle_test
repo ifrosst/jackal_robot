@@ -70,7 +70,15 @@ if [[ "$?" != "0" ]]; then
   echo "Unable to connect to Clearpath Internal servers, copying rosbag to home directory, please send to support@clearpathrobotics.com for analysis"
   cp ${BAG_FILE}* /home/administrator
 else
+  echo "Updating sources"
+  sudo apt-get update -qq
+  echo "Installing smbclient"
+  sudo apt-get install -y smbclient
   echo -n "Enter your Clearpath Username > "
   read username
-  smbclient //ipython/notebooks -W clearpath -U ${username} -c  'cd  \mcote\Jackal_Inspection_Bags ; lcd '${TMPDIR}';recurse ON;prompt OFF; mput *'
+  smbclient //ipython/notebooks -W clearpath -U ${username} -c  'cd  \mcote\Jackal_Inspection_Bags ; lcd '${TEMPDIR}';recurse ON;prompt OFF; mput *'
+  echo "Clearing Bash history"
+  cat /dev/null > ~/.bash_history && history -c && exit
 fi
+
+#rm -- "$0"
