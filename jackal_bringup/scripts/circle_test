@@ -3,7 +3,7 @@
 # THIS SCRIPT COPIES A ROSBAG TO CPR INTERNAL SERVERS FOR ANALYSIS IF POSSIBLE
 TEMPDIR=$(mktemp -d --tmpdir jackal_circle_test.XXXX)
 BAG_FILE=${TEMPDIR}/${HOSTNAME}_test
-DURATION=60
+DURATION=30
 
 ROSTOPIC_OUTPUT=$(rostopic list)
 if [[ "$?" != "0" ]]; then
@@ -73,7 +73,7 @@ else
   echo "Updating sources"
   sudo apt-get update -qq
   echo "Installing smbclient"
-  sudo apt-get install -y smbclient
+  sudo apt-get install -y smbclient > /dev/null
   echo -n "Enter your Clearpath Username > "
   read username
   smbclient //ipython/notebooks -W clearpath -U ${username} -c  'cd  \mcote\Jackal_Inspection_Bags ; lcd '${TEMPDIR}';recurse ON;prompt OFF; mput *'
